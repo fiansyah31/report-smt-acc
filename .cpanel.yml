@@ -1,5 +1,5 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/comeitno/public_html/report-smt-acc.com/
+    - export DEPLOYPATH=/home/comeitno/public_html/smt-acc.comeitnow.com/
     - /bin/cp -R public $DEPLOYPATH
