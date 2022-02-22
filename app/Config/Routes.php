@@ -32,6 +32,9 @@ $routes->setAutoRoute(true);
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/', 'Home::index');
+$routes->get('/login', 'Auth::login');
+$routes->get('/register', 'Auth::register');
+$routes->get('/forgot', 'Auth::forgot');
 
 //untuk mengatur halaman user agar bisa di akses oleh admin
 $routes->get('users/index', 'Users::index', ['filter' => 'role:administrator']);
