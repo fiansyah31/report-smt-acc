@@ -5,7 +5,7 @@ use \Myth\Auth\Models\UserModel;
 use App\Models\LaporanModel;
 use CodeIgniter\I18n\Time;
 
-class Home extends BaseController
+class Auth extends BaseController
 {
         public function login() {
             $data['title'] = 'Login';
