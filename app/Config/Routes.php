@@ -38,6 +38,7 @@ $routes->get('/', 'Home::index');
 $routes->get('users/index', 'Users::index', ['filter' => 'role:administrator']);
 $routes->get('laporan/index', 'Laporan::index');
 $routes->get('/laporan/detail/(:any)', 'Laporan::detail/$1');
+$routes->get('/pdf/cetak', 'PdfController::cetak');
 
 /*
  * --------------------------------------------------------------------

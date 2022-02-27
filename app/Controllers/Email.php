@@ -30,7 +30,7 @@ class Email extends BaseController
         $email = \Config\Services::email();
         $emailss = $this->emailmodel->getEmail();
         $message=  "Email yang anda gunakan aktif";
-        $email->setFrom('fiangame90@gmail.com', 'Tes Email');
+        $email->setFrom('admin@report-smt-acc.site', 'Tes Email');
         foreach ($emailss as $k):
         $email->setTo($k['email']);
         endforeach;

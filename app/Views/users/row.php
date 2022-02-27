@@ -1,5 +1,5 @@
 <tr>
-    <td><?= $row->id; ?></td>
+    <td><?= $row->id_karyawan; ?></td>
     <td><?= $row->username; ?></td>
     <td><?= empty($group) ? '' : $group[0]['name']; ?></td>
     <td><?= $row->email; ?></td>

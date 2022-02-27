@@ -11,8 +11,16 @@
                                 <form action="<?php base_url(); ?>/users/update_profile">
                                 <input type="hidden" name="id" value="<?= user()->id; ?>">
                                     <div class="form-group mb-3">
+                                        <label for="inputEmail4" class="form-label">ID KARYAWAN</label>
+                                        <input type="text" name="id_karyawan" class="form-control" value="<?= user()->id_karyawan; ?>">
+                                    </div>
+                                    <div class="form-group mb-3">
                                         <label for="inputEmail4" class="form-label">Full Name</label>
-                                        <input type="text" name="username" class="form-control" value="<?= user()->username; ?>">
+                                        <input type="text" name="fullname" class="form-control" value="<?= user()->fullname; ?>">
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label for="inputEmail4" class="form-label">Username</label>
+                                        <input type="text" name="username" class="form-control" value="<?= user()->username; ?>" disabled>
                                     </div>
                                     <div class="form-group mb-3">
                                         <label for="inputEmail4" class="form-label">Email</label>

@@ -9,7 +9,7 @@ class Email extends BaseConfig
     /**
      * @var string
      */
-    public $fromEmail;
+    public $fromEmail ='admin@report-smt-acc.site';
 
     /**
      * @var string
@@ -47,21 +47,21 @@ class Email extends BaseConfig
      *
      * @var string
      */
-    public $SMTPHost ='smtp.gmail.com';
+    public $SMTPHost ='cwp171.jagoweb.org';
 
     /**
      * SMTP Username
      *
      * @var string
      */
-    public $SMTPUser = 'fiangame90@gmail.com';
+    public $SMTPUser = 'admin@report-smt-acc.site';
 
     /**
      * SMTP Password
      *
      * @var string
      */
-    public $SMTPPass = 'subhanallah0';
+    public $SMTPPass = 'fianpastibisa1';
 
     /**
      * SMTP Port
@@ -117,7 +117,7 @@ class Email extends BaseConfig
      *
      * @var string
      */
-    public $charset = 'UTF-8';
+    public $charset = 'iso-8859-1';
 
     /**
      * Whether to validate the email address

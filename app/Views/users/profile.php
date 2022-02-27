@@ -16,12 +16,17 @@
                             <table class="table">
                                 <tbody>
                                     <tr>
-                                    <td>NIM</td>
+                                    <td>ID KARYAWAN</td>
                                     <td>:</td>
-                                    <td><?= user()->nim; ?></td>
+                                    <td><?= user()->id_karyawan; ?></td>
                                     </tr>
                                     <tr>
                                     <td>Full name</td>
+                                    <td>:</td>
+                                    <td><?= user()->fullname; ?></td>
+                                    </tr>
+                                    <tr>
+                                    <td>Username</td>
                                     <td>:</td>
                                     <td><?= user()->username; ?></td>
                                     </tr>
@@ -31,26 +36,8 @@
                                     <td><?= user()->email; ?></td>
                                     </tr>
                                     <tr>
-                                    <td>NO HP</td>
-                                    <td>:</td>
-                                    <td><?= user()->no_hp; ?></td>
+                                        <td><a href="/users/change_profile/<?= user()->id; ?>" class="btn btn-info px-3">Ubah</a></td>
                                     </tr>
-                                    <tr>
-                                    <td>Address</td>
-                                    <td>:</td>
-                                    <td><?= user()->alamat; ?></td>
-                                    </tr>
-                                    <tr>
-                                    <td>Universitas</td>
-                                    <td>:</td>
-                                    <td><?= user()->universitas; ?></td>
-                                    </tr>
-                                    <tr>
-                                    <td>Jurusan</td>
-                                    <td>:</td>
-                                    <td><?= user()->jurusan; ?></td>
-                                    </tr>
-                                    <td><a href="/users/change_profile/<?= user()->id; ?>" class="btn btn-info px-3">Change</a></td>
                                 </tbody>
                             </table>
                             </div>

@@ -5,6 +5,7 @@ namespace App\Controllers;
 use \Myth\Auth\Models\UserModel;
 use \Myth\Auth\Password;
 use \Myth\Auth\Authorization\GroupModel;
+use Myth\Auth\Entities\User;
  
 class Users extends BaseController
 {
@@ -125,7 +126,8 @@ class Users extends BaseController
         $userModel = new UserModel();
         $userModel->save([
             'id' => user()->id,
-            'username' => $this->request->getVar('username'),
+            'id_karyawan' => $this->request->getVar('id_karyawan'),
+            'fullname' => $this->request->getVar('fullname'),
             'email' => $this->request->getVar('email'),
 
         ]);
@@ -134,4 +136,5 @@ class Users extends BaseController
 
         return redirect()->to('users/profile');
     }
+   
 }

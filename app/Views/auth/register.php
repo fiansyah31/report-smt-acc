@@ -32,6 +32,7 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="p-5">
+                        <img src="<?php base_url(); ?>/img/logo-inalum.png" alt="" class="img-fluid mb-3">
                             <div class="text-center">
                                 <h1 class="h4 text-gray-900 mb-4"><?=lang('Auth.register')?></h1>
                             </div>
@@ -43,6 +44,11 @@
  
                                 <div class="form-group row">
                                     <div class="col-sm-12">
+                                        <input type="text" class="form-control form-control-user <?php if(session('errors.id_karyawan')) : ?>is-invalid<?php endif ?>" name="id_karyawan" placeholder="ID KARYAWAN" value="<?= old('id_karyawan') ?>">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
                                         <input type="email" class="form-control form-control-user <?php if(session('errors.email')) : ?>is-invalid<?php endif ?>"
                                             name="email" aria-describedby="emailHelp" placeholder="<?=lang('Auth.email')?>" value="<?= old('email') ?>">
                                         <small id="emailHelp" class="form-text text-muted"><?=lang('Auth.weNeverShare')?></small>
@@ -51,7 +57,7 @@
  
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <input type="text" class="form-control form-control-user <?php if(session('errors.username')) : ?>is-invalid<?php endif ?>" name="username" placeholder="<?=lang('Auth.username')?>" value="<?= old('username') ?>">
+                                        <input type="text" class="form-control form-control-user <?php if(session('errors.username')) : ?>is-invalid<?php endif ?>" name="username" placeholder="Nama Lengkap" value="<?= old('username') ?>">
                                     </div>
                                 </div>
  

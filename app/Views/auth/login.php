@@ -39,6 +39,7 @@
                         <div class="row">
                             <div class="col-lg">
                                 <div class="p-5">
+                                <img src="<?php base_url(); ?>/img/logo-inalum.png" alt="" class="img-fluid mb-3">
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4"><?=lang('Auth.loginTitle')?></h1>
                                     </div>
@@ -46,10 +47,10 @@
                                     <form action="<?= route_to('login') ?>"  class="user" method="post">
                                         <?= csrf_field() ?>
  
-                                        <?php if ($config->validFields === ['email']): ?>
+                                        <?php if ($config->validFields === ['id_karyawan']): ?>
                                             <div class="form-group">
-                                                <input type="email" class="form-control form-control-user <?php if(session('errors.login')) : ?>is-invalid<?php endif ?>"
-                                                    name="login" placeholder="<?=lang('Auth.email')?>">
+                                                <input type="text" class="form-control form-control-user <?php if(session('errors.login')) : ?>is-invalid<?php endif ?>"
+                                                    name="login" placeholder="<?=lang('Auth.id_karyawan')?>">
                                                 <div class="invalid-feedback">
                                                     <?= session('errors.login') ?>
                                                 </div>
@@ -57,7 +58,7 @@
                                         <?php else: ?>
                                             <div class="form-group">
                                                 <input type="text" class="form-control form-control-user <?php if(session('errors.login')) : ?>is-invalid<?php endif ?>"
-                                                        name="login" placeholder="<?=lang('Auth.emailOrUsername')?>">
+                                                        name="login" placeholder="ID KARYAWAN">
                                                 <div class="invalid-feedback">
                                                     <?= session('errors.login') ?>
                                                 </div>

@@ -6,9 +6,19 @@
                         <div class="card-header py-3">
                             <h6 class="m-0 font-weight-bold text-primary">Daftar User</h6>
                         </div>
+                        <div class="container">
+
+                            </div>
                         <div class="card-body">
                             <table class="table table-borderless">
                                 <div class="row">
+                                    <div class="col-md-6">     
+                                        <tr>     
+                                            <td>ID KARYAWAN</td>
+                                            <td>:</td>
+                                            <td><?=$detail['idkaryawan'];?></td>
+                                        </tr>
+                                    </div>
                                     <div class="col-md-6">     
                                         <tr>     
                                             <td>Nama Lengkap</td>
@@ -32,19 +42,22 @@
                                             <thead>
                                                 <tr>
                                                     <th>Mesin</th>
-                                                    <th>Keterangan</th>
+                                                    <th>Result</th>
+                                                    <th>Judgement</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <?php foreach ($keterangan as $ke) {?>
                                                 <tr>     
                                                     <td><?= $ke['nama_mesin']; ?></td>
-                                                    <td><?= $ke['keterangan']; ?></td>
+                                                    <td><?= $ke['result']; ?></td>
+                                                    <td><?= $ke['judgement']; ?></td>
                                                 </tr>
                                                 <?php } ?>                                  
                                             </tbody>
                                         </table>
                                         <a href="<?php base_url(); ?>/laporan/index" class="btn btn-secondary px-3">Kembali</a>
+                                        <a href="<?php base_url(); ?>/laporan/viewpdf/<?= $detail['id_laporan']; ?>" class="btn btn-warning px-3">Donwload pdf</a>
                                     </div>
                                     </div>
                                 </div>

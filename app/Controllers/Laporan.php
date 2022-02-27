@@ -6,9 +6,9 @@ use App\Models\EmailModel;
 use \Myth\Auth\Models\UserModel;
 use App\Models\LaporanModel;
 use App\Models\LaporanResult;
-use App\Models\Resultjudgement;
+use App\Models\MesinLaporan;
 use App\Models\MesinModel;
-
+use App\Libraries\MY_TCPDF AS TCPDF;
 use Config\Services;
  
 
@@ -22,7 +22,6 @@ class Laporan extends BaseController
     public function __construct()
     {
         $this->laporanmodel = new LaporanModel();
-        $this->resultjudgement = new Resultjudgement();
         $this->mesinmodel = new MesinModel();
     }
     public function index()
@@ -73,15 +72,92 @@ class Laporan extends BaseController
         'validation' => \Config\Services::validation(),
         'detail' => $this->laporanmodel->getLaporan($id_laporan),
         'keterangan' =>$query,
+        'semua' => $this->laporanmodel->LaporanFind($id_laporan)
         ];
+     
         return view('laporan/detail', $data);
     }
 
-    public function delete($id_laporan){
-    
-      $querys=   $this->laporanmodel->getLaporan($id_laporan);
-      $this->laporanmodel->delete($querys);
 
+
+
+
+    
+    public function viewpdf($id_laporan){
+      $query = $this->mesinmodel->getMesin($id_laporan);
+      $datapdf = [
+      'details' => $this->laporanmodel->getLaporan($id_laporan),
+      'keterangan' =>$query,
+      ];
+      
+       // create new PDF document
+       $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        
+       // set document information
+       $pdf->SetCreator(PDF_CREATOR);
+       $pdf->SetAuthor('REPORT-SMT-ACC');
+       $pdf->SetTitle('Laporan');
+       $pdf->SetSubject('Laporan');
+       $pdf->SetKeywords('TCPDF, PDF, example, Report-smt-acc');
+
+       // set default header data
+       $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 001', PDF_HEADER_STRING, array(0,64,255), array(0,64,128));
+       $pdf->setFooterData(array(0,64,0), array(0,64,128));
+
+       // set header and footer fonts
+       $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+       $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+       // set default monospaced font
+       $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+       // set margins
+       $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+       $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+       $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+       // set auto page breaks
+       $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+       // set image scale factor
+       $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+       // set default font subsetting mode
+       $pdf->setFontSubsetting(true);
+
+       // Set font
+       // dejavusans is a UTF-8 Unicode font, if you only need to
+       // print standard ASCII chars, you can use core fonts like
+       // helvetica or times to reduce file size.
+       $pdf->SetFont('dejavusans', '', 14, '', true);
+
+       // Add a page
+       // This method has several options, check the source code documentation for more information.
+       $pdf->AddPage();
+
+      //view mengarah ke invoice.php
+       $html =  view('pdf/invoice' , $datapdf);
+
+       // Print text using writeHTMLCell()
+       $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
+
+       // ---------------------------------------------------------
+       $this->response->setContentType('application/pdf');
+       // Close and output PDF document
+       // This method has several options, check the source code documentation for more information.
+       $pdf->Output('hasil-laporan.pdf', 'I');
+      
+    }
+
+    public function delete($id_laporan)
+    {
+$mesinlaporan = new MesinLaporan();
+
+   $loh=  $this->mesinmodel->where('laporan_id', $id_laporan);
+   $this->laporanmodel->delete($id_laporan);
+   $loh->delete();
+
+			 
         session()->setFlashdata('pesan', 'Data berhasil dihapus.');
         return redirect()->to('laporan/index');
     }
@@ -138,7 +214,7 @@ class Laporan extends BaseController
     public function addlaporan()
 	{
 
-			$data['tbl_resultjudgement'] = $this->resultjudgement->select('id_resultjudgement, keterangan_laporan')->findAll();
+			//$data['tbl_resultjudgement'] = $this->resultjudgement->select('id_resultjudgement, keterangan_laporan')->findAll();
       $data ['title'] =  'Tambah Laporan';
 
 		return	view('laporan/addlaporan', $data);
@@ -171,8 +247,17 @@ class Laporan extends BaseController
             "max_length" => "{field} terlalu panjang (max:1000)",
           ]
         ],
-        "keterangan.$i" => [
-          "label" => "Keterangan",
+        "result.$i" => [
+          "label" => "Result",
+          "rules" => "required|max_length[1000]",
+          "errors" => [
+            "required" => "{field} tidak boleh kosong",
+           // "alpha_space" => "{field} hanya boleh mengandung huruf dan spasi",
+            "max_length" => "{field} terlalu panjang (max:1000)",
+          ]
+        ],
+        "judgement.$i" => [
+          "label" => "Judgement",
           "rules" => "required|max_length[1000]",
           "errors" => [
             "required" => "{field} tidak boleh kosong",
@@ -184,7 +269,8 @@ class Laporan extends BaseController
       
       $error[$i] = [
         'nama_mesin' => $validation->getError("nama_mesin.$i"),
-        'keterangan' => $validation->getError("keterangan.$i"),
+        'result' => $validation->getError("result.$i"),
+        'judgement' => $validation->getError("keterangan.$i"),
       ];
 
       // Validasi khusus untuk kewarganegaraan (jika user melakukan inspect element)
@@ -199,52 +285,61 @@ class Laporan extends BaseController
         session()->setFlashdata('pesan', "$jumlah_data Data Gagal di input");
 			} else {
 				// Mengambil data dari request
+				$idkaryawan = $this->request->getVar('idkaryawan');
 				$nama = $this->request->getVar('nama');
 				$tanggal = $this->request->getVar('tanggal');
 				$nama_mesin = $this->request->getVar('nama_mesin');
-				$keterangan = $this->request->getVar('keterangan');
+				$result = $this->request->getVar('result');
+				$judgement = $this->request->getVar('judgement');
 				// Perulangan untuk menyiapkan array yang akan diinsert
         $datas= array([
           'user_id' =>user()->id ,
+          'idkaryawan' => $this->request->getVar('idkaryawan'),
           'nama' => $this->request->getVar('nama'),
           'tanggal' => $this->request->getVar('tanggal'),
         ]);
+       
 				// Insert banyak ke database
 				if($this->laporanmodel->insertBatch($datas) == true){
           $id_laporan = $this->laporanmodel->insertID();
           for ($i = 0; $i < $jumlah_data; $i++) {
             $data[$i] = [
               'nama_mesin' => htmlspecialchars($nama_mesin[$i]),
-              'keterangan' => htmlspecialchars($keterangan[$i]),
+              'result' => htmlspecialchars($result[$i]),
+              'judgement' => htmlspecialchars($judgement[$i]),
               'laporan_id' => $id_laporan,
             ];
           }
           $this->mesinmodel->insertBatch($data);
         }
          
-
+        $query = $this->mesinmodel->getMesin($id_laporan);
+      $datapdf = [
+      'detail' => $this->laporanmodel->getLaporan($id_laporan),
+      'keterangan' =>$query,
+      ];
+    
+       // $message=  "Laporan telah di upload oleh $nama, pada tanggal $tanggal ".anchor('laporan/detail/'.$id_laporan,'Lihat laporan', '');
         
-          
-        $message=  "Laporan telah di upload oleh $nama , pada tanggal $tanggal ".anchor('laporan/detail/'.$id_laporan,'Lihat laporan','');
-
         $email = \Config\Services::email();
-
+        
         $emailmodel = new EmailModel();
         $emaildata = $emailmodel->getEmail();
         
+        $body = view('laporan_print/index.php',$datapdf);
 				// Mengembalikan pesan berhasil
         //	$view = [
           //	'success' => "$jumlah_data data tersebut berhasil ditambahkan",
           //	];
           session()->setFlashdata('pesan', "$jumlah_data Data berhasil ditambahkan.");
           $emailclient =  user()->email;
-          $nameclient =  user()->username;
-          $email->setFrom($emailclient, $nameclient);
+          $nameclient =  user()->fullname;
+          $email->setFrom('admin@report-smt-acc.site', $emailclient);
           foreach ($emaildata as $k):
           $email->setTo($k['email']);
           endforeach;
           $email->setSubject('Laporan Kerusakan mesin');
-          $email->setMessage($message);
+          $email->setMessage($body);
           $email->send();
 
           
