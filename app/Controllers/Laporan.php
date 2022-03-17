@@ -5,16 +5,23 @@ namespace App\Controllers;
 use App\Models\EmailModel;
 use \Myth\Auth\Models\UserModel;
 use App\Models\LaporanModel;
+use App\Models\DataMesin;
 use App\Models\LaporanResult;
 use App\Models\MesinLaporan;
 use App\Models\MesinModel;
+use App\Models\GambarMesin;
 use App\Libraries\MY_TCPDF AS TCPDF;
 use Config\Services;
- 
+use Countable;
+use Kint\Zval\Value;
+use PHPUnit\Framework\Constraint\Count;
+
+use function PHPUnit\Framework\countOf;
 
 class Laporan extends BaseController
 {
     protected $laporanmodel;
+    protected $gambarmesin;
     protected $resultjudgement;
     protected $aircompresor;
     protected $mesinmodel;
@@ -23,6 +30,7 @@ class Laporan extends BaseController
     {
         $this->laporanmodel = new LaporanModel();
         $this->mesinmodel = new MesinModel();
+        $this->gambarmesin = new GambarMesin();
     }
     public function index()
     {
@@ -65,6 +73,8 @@ class Laporan extends BaseController
     }
     public function detail($id_laporan)
     {
+      
+     
 
       $query = $this->mesinmodel->getMesin($id_laporan);
         $data = [
@@ -72,7 +82,8 @@ class Laporan extends BaseController
         'validation' => \Config\Services::validation(),
         'detail' => $this->laporanmodel->getLaporan($id_laporan),
         'keterangan' =>$query,
-        'semua' => $this->laporanmodel->LaporanFind($id_laporan)
+        //'gambar' =>  $this->gambarmesin->getGambar($id_laporan),
+        //'keterangan' => $this->laporanmodel->LaporanFind($id_laporan)
         ];
      
         return view('laporan/detail', $data);
@@ -91,7 +102,7 @@ class Laporan extends BaseController
       ];
       
        // create new PDF document
-       $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+       $pdf = new TCPDF('L', PDF_UNIT, 'A4', true, 'UTF-8', false);
         
        // set document information
        $pdf->SetCreator(PDF_CREATOR);
@@ -129,7 +140,7 @@ class Laporan extends BaseController
        // dejavusans is a UTF-8 Unicode font, if you only need to
        // print standard ASCII chars, you can use core fonts like
        // helvetica or times to reduce file size.
-       $pdf->SetFont('dejavusans', '', 14, '', true);
+       $pdf->SetFont('helvetica', '', 6);
 
        // Add a page
        // This method has several options, check the source code documentation for more information.
@@ -137,7 +148,6 @@ class Laporan extends BaseController
 
       //view mengarah ke invoice.php
        $html =  view('pdf/invoice' , $datapdf);
-
        // Print text using writeHTMLCell()
        $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
 
@@ -151,10 +161,18 @@ class Laporan extends BaseController
 
     public function delete($id_laporan)
     {
-$mesinlaporan = new MesinLaporan();
-
-   $loh=  $this->mesinmodel->where('laporan_id', $id_laporan);
-   $this->laporanmodel->delete($id_laporan);
+      $mesinlaporan = new MesinLaporan();
+     
+      $ha = $this->mesinmodel->getMesin($id_laporan);
+      foreach($ha as $s) {
+        if ($s['file_gambar'] != 'default.png') {
+          var_dump($s['file_gambar']);
+          //lohpus gambar
+          unlink('mesin/' . $s['file_gambar']);
+        }
+      }
+      $this->laporanmodel->delete($id_laporan);
+      $loh=  $this->mesinmodel->where('laporan_id', $id_laporan);
    $loh->delete();
 
 			 
@@ -213,37 +231,34 @@ $mesinlaporan = new MesinLaporan();
 
     public function addlaporan()
 	{
-
+    $mesin = new DataMesin();
 			//$data['tbl_resultjudgement'] = $this->resultjudgement->select('id_resultjudgement, keterangan_laporan')->findAll();
       $data ['title'] =  'Tambah Laporan';
+      $data['mesin'] = $mesin->getDataMesin();
+      $data['mesin'] = $mesin->getDataMesin();
+      $data ['validation'] = \Config\Services::validation();
 
 		return	view('laporan/addlaporan', $data);
 
-
-			
-
-			
 		}
 	
-
-
-    public function create()
-    {
-      
+    public function create(){ 
       $jumlah_data = count($this->request->getVar('nama_mesin'));
-      
+      $fotos =  count($this->request->getFiles());
+      $fotos['file_gambar'];
+    
 			$validation = \Config\Services::validation();
 			// Perulangan untuk validasi
 		// Perulangan untuk validasi
-
-    for ($i = 0; $i < $jumlah_data; $i++) {
+    $image = array();
+    for ($i = 0; $i < $jumlah_data ; $i++) {
       $valid = $this->validate([
         "nama_mesin.$i" => [
           "label" => "Nama Mesin",
           "rules" => "required|max_length[1000]",
           "errors" => [
             "required" => "{field} tidak boleh kosong",
-          // "alpha_space" => "{field} hanya boleh mengandung huruf dan spasi",
+          //"alpha_space" => "{field} hanya boleh mengandung huruf dan spasi",
             "max_length" => "{field} terlalu panjang (max:1000)",
           ]
         ],
@@ -265,54 +280,130 @@ $mesinlaporan = new MesinLaporan();
             "max_length" => "{field} terlalu panjang (max:1000)",
           ]
         ],
+        "file_gambar.$i" => [
+          "label" => "Judgement",
+          "rules" => "max_size[file_gambar,5000]|is_image[file_gambar]|mime_in[file_gambar,image/jpg,image/jpeg,image/png]",
+          "errors" => [
+            "max_size" => "Size gambar terlalu besar",
+              "is_image" => "Yang anda pilih bukan gambar",
+              "mime_in" => "Yang anda pilih bukan ekstensi gambar"
+          ]
+          ],
+        "temuan.$i" => [
+          "label" => "Temuan",
+          "rules" => "max_length[1000]",
+          "errors" => [
+            //"required" => "{field} tidak boleh kosong",
+           // "alpha_space" => "{field} hanya boleh mengandung huruf dan spasi",
+            "max_length" => "{field} terlalu panjang (max:1000)",
+          ]
+      ]
       ]);
       
-      $error[$i] = [
-        'nama_mesin' => $validation->getError("nama_mesin.$i"),
-        'result' => $validation->getError("result.$i"),
-        'judgement' => $validation->getError("keterangan.$i"),
-      ];
+     // $error[$i] = [
+     //   'nama_mesin' => $validation->getError("nama_mesin.$i"),
+      //  'result' => $validation->getError("result.$i"),
+      //  'judgement' => $validation->getError("keterangan.$i"),
+     //   'file_gambar' => $validation->getError("file_gambar.$i"),
+     // ];
 
-      // Validasi khusus untuk kewarganegaraan (jika user melakukan inspect element)
-   //   if ($this->mesinmodel->select('id')->find($this->request->getVar('keterangan')[$i]) == null) {
-      //  $error[$i]['keterangan'] = 'Data tersebut tidak ada';
-     // }
     }
-	
-				// Jika terdapat kesalahan
-			if (!$valid ) {
-				$error["jumlah_data"] = $jumlah_data;
-        session()->setFlashdata('pesan', "$jumlah_data Data Gagal di input");
+
+    $image_files = 0;
+    // Jika terdapat kesalahan
+    if (!$valid ) {
+        $error["jumlah_data"] = $jumlah_data;
+        session()->setFlashdata('pesan', " $jumlah_data gagal di input, Harap periksa form anda kembali");
+        return redirect()->to('laporan/addlaporan')->withInput();
+      
 			} else {
 				// Mengambil data dari request
-				$idkaryawan = $this->request->getVar('idkaryawan');
-				$nama = $this->request->getVar('nama');
-				$tanggal = $this->request->getVar('tanggal');
 				$nama_mesin = $this->request->getVar('nama_mesin');
 				$result = $this->request->getVar('result');
 				$judgement = $this->request->getVar('judgement');
-				// Perulangan untuk menyiapkan array yang akan diinsert
-        $datas= array([
-          'user_id' =>user()->id ,
+				$temuan = $this->request->getVar('temuan');
+
+       // $filesampul = $this->request->getFile('file_gambar');
+         
+            $datas= array([
+              'user_id' =>user()->id ,
           'idkaryawan' => $this->request->getVar('idkaryawan'),
           'nama' => $this->request->getVar('nama'),
+          'acc' => $this->request->getVar('acc'),
           'tanggal' => $this->request->getVar('tanggal'),
+          'jam_mulai' => $this->request->getVar('jam_mulai'),
+          'jam_selesai' => $this->request->getVar('jam_selesai'),
+         // 'temuan' => $this->request->getVar('temuan'),
         ]);
-       
+         // $gambar=$this->request->getFile('file_gambar');
 				// Insert banyak ke database
 				if($this->laporanmodel->insertBatch($datas) == true){
-          $id_laporan = $this->laporanmodel->insertID();
-          for ($i = 0; $i < $jumlah_data; $i++) {
-            $data[$i] = [
-              'nama_mesin' => htmlspecialchars($nama_mesin[$i]),
-              'result' => htmlspecialchars($result[$i]),
-              'judgement' => htmlspecialchars($judgement[$i]),
-              'laporan_id' => $id_laporan,
-            ];
+          $id_laporan = $this->laporanmodel->insertID();        
+         if ($images = $this->request->getFiles()) {
+           foreach($images['file_gambar'] as $img) {
+            // if ($img->isValid() && ! $img->hasMoved()) {
+              // $gas = $this->request->getFile('file_gambar');
+               if($img->getError() == 4){
+                $newName = 'default.png';
+                
+               }
+               else {
+                 $newName = $img->getRandomName();                
+                 //$newName = $img->getClientName();
+                 $img->move('mesin', $newName);    
+               }
+             // }      
+              $datasx[]= $newName;                                   
+            }
+            
           }
-          $this->mesinmodel->insertBatch($data);
-        }
+          
          
+          for ($i = 0; $i < $jumlah_data ; $i++) {
+                $data[$i] = [
+                  'nama_mesin' => htmlspecialchars($nama_mesin[$i]),
+                  'result' => htmlspecialchars($result[$i]),
+                  'judgement' => htmlspecialchars($judgement[$i]),
+                  'file_gambar' => $datasx[$i],
+                  'temuan' =>  htmlspecialchars($temuan[$i]),
+                  'laporan_id' => $id_laporan,
+                 // var_dump($temuan)
+                  //var_dump($datasx[$i])
+                ];
+              }
+        $this->mesinmodel->insertBatch($data);
+      
+      }
+        // if($this->mesinmodel->insertBatch($data) == true){
+       //    $mesin_id[]= $this->mesinmodel->InsertID();
+        //   $lah = count($mesin_id);
+         //  $wo = $this->mesinmodel->InsertID();
+           //var_dump($had);
+          // if ($images =$this->request->getFiles()) {
+          //  foreach($images['file_gambar'] as $img) {
+          //      if (($img->isValid() && ! $img->hasMoved())) {   
+          //          $newName = $img->getRandomName();                
+                    //$newName = $img->getClientName();
+           //         $img->move('mesin', $newName);                 
+           //       }
+          ///        
+             //     $datax= array([
+            //        'file_gambar' => $newName,
+             //       'mesin_id' => $lah,
+             //       'laporanmesin_id' => $id_laporan
+               //   ]);
+               //   var_dump($newName);
+               // 
+                
+                  //var_dump($datax);
+               //   $this->gambarmesin->insertBatch($datassx);
+             //   }
+            //  }
+              //var_dump($datax);
+           //}
+
+          
+       
         $query = $this->mesinmodel->getMesin($id_laporan);
       $datapdf = [
       'detail' => $this->laporanmodel->getLaporan($id_laporan),

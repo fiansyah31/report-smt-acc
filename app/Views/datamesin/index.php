@@ -5,61 +5,43 @@
                         <div class="card-header py-3">
                             <h6 class="m-0 font-weight-bold text-primary">Daftar Laporan</h6>
                         </div>
-                        <form action="<?php base_url(); ?>/laporan/date" method="get">
+                       
                         <div class="card-body">
                         <?php if (session()->getFlashdata('pesan')) : ?>
                         <div class="alert alert-success" role="alert">
                         <?= session()->getFlashdata('pesan'); ?>
                         </div>
                     <?php endif; ?>
-
-                  
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label>Tanggal Awal</label>
-                                <input type="date" class="form-control" name="tanggal_awal" >
-                            </div>
-                            <div class="col-md-6">
-                                <label>Sampai Tanggal</label>
-                                <input type="date" class="form-control" name="tanggal_akhir" >
-                            </div>
-                            <div class="col-12 mt-3">
-                                <button class="btn btn-info px-3" type="submit">Cari</button>
-                            </div>
-                        </div>
+                    <div class="mt-2 mb-3">
+                        <a href="<?php base_url(); ?>/data/addmesin" class="btn btn-secondary px-3">Tambah Data</a>
+                    </div>
                         <div class="table-responsive">
-    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>No</th>
                 <th>Nama Lengkap</th>
-                <th>Tanggal</th>
-                <th>Jam Mulai</th>
-                <th>Jam selesai</th>
+                <th style="width:250px">Foto</th>
                 <th style="width: 90px;">Action</th>
             </tr>
         </thead>
         <tbody>
         <?php $i = 1; ?>
-                    <?php foreach ($laporan as $k) { ?>
+                    <?php foreach ($mesin as $k) { ?>
             <tr>
                 <td><?= $i++ ?></td>
-                <td><?= $k['nama']; ?></td>
-                <td><?= $k['tanggal']; ?></td>
-                <td><?= $k['jam_mulai']; ?></td>
-                <td><?= $k['jam_selesai']; ?></td>
+                <td><?= $k['mesin']; ?></td>
+                <td style="width:250px"><img src="/fotomesin/<?= $k['foto_mesin']; ?>" class="img-fluid rounded-start w-50" alt="<?= $k['foto_mesin']; ?>"></td>
                 <td style="width: 90px;">
-                <a href="<?php base_url(); ?>/laporan/detail/<?= $k['id_laporan']; ?>" class="btn btn-info px-3">Lihat</a>
-                <a href="<?php base_url(); ?>/laporan/delete/<?= $k['id_laporan']; ?>" class="btn btn-danger mt-2 px-3">Delete</a>
+                <a href="<?php base_url(); ?>/data/detail/<?= $k['id']; ?>" class="btn btn-info px-3">Lihat</a>
+                <a href="<?php base_url(); ?>/data/delete/<?= $k['id']; ?>" class="btn btn-danger mt-2 px-3">Delete</a>
             </td>
             </tr>
             <?php } ?>
         </tbody>
-
     </table>
 </div>
                         </div>
-                        </form>
                     </div>
  
 <?= $this->endSection() ?>  
@@ -109,31 +91,3 @@
 
 <?= $this->endSection() ?>  
  
-<?= $this->section('script-js') ?>    
- 
-<script type="text/javascript">
-    $(document).ready(function(){
-        // get Delete Page
-        $('.btn-active-users').on('click',function(){
-            // get data from button edit
-            const id = $(this).data('id');
-            const active = $(this).data('active');
-             
-
-            // Set data to Form Edit
-            $('.id').val(id);
-            $('.active').val(active);
-            // Call Modal Edit
-            $('#activateModal').modal('show');
-        });
-        $('.btn-change-group').on('click',function(){
-    const id = $(this).data('id');
-     
-    $('.id').val(id);
-    $('#changeGroupModal').modal('show');
-});
-
-    });
-</script>
- 
-<?= $this->endSection() ?>  

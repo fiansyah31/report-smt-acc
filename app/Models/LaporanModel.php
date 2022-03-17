@@ -13,7 +13,7 @@ class LaporanModel extends Model
    protected $useAutoIncrement     = true;
     
    protected $allowedFields = [
-     'nama', 'idkaryawan', 'tanggal', 'user_id'
+     'nama', 'idkaryawan', 'tanggal', 'jam_mulai', 'jam_selesai', 'acc', 'user_id'
    ];
     
     //Dates
@@ -27,8 +27,9 @@ class LaporanModel extends Model
     {
        
         if ($id_laporan == false) {
-            return
-                $this->findAll();
+        return
+         $this->findAll();
+         
         }
         return
             $this->where(['id_laporan' => $id_laporan])->first();
@@ -36,9 +37,12 @@ class LaporanModel extends Model
     }
     
     public function LaporanFind(){
-      return $this->table('tbl_laporan');
-      $this->select('id_laporan, nama, tanggal','nama_mesin', 'result', 'judgement')->join('tbl_mesin', 'tbl_mesin.laporan_id = tbl_laporan.id_laporan');
-        $this->get()->getResultArray();
+
+     return $this->table("tbl_laporan")
+    ->select('*')
+    ->join('tbl_mesin', 'tbl_mesin.laporan_id = tbl_laporan.id_laporan')
+    ->join('gambar_mesin', 'gambar_mesin.laporanmesin_id = tbl_mesin.laporan_id')
+    ->get()->getResultArray();
     }
 
     public function Mingguan(){

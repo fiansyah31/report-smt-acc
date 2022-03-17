@@ -33,6 +33,21 @@
                                             <td><?=$detail['tanggal'];?></td>
                                         </tr>
                                     </div>
+                                    <div class="col-md-6">
+                                        <tr>
+                                            <td>Jam Mulai</td>
+                                            <td>:</td>
+                                            <td><?=$detail['jam_mulai'];?></td>
+                                        </tr>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <tr>
+                                            <td>Jam Selesai</td>
+                                            <td>:</td>
+                                            <td><?=$detail['jam_selesai'];?></td>
+                                        </tr>
+                                    </div>
+                                   
                                 </div>
                             </table>
                                 <div class="row">
@@ -42,18 +57,23 @@
                                             <thead>
                                                 <tr>
                                                     <th>Mesin</th>
+                                                    <th>Temuan Tambahan</th>
                                                     <th>Result</th>
                                                     <th>Judgement</th>
+                                                    <th >Gambar</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <?php foreach ($keterangan as $ke) {?>
                                                 <tr>     
                                                     <td><?= $ke['nama_mesin']; ?></td>
+                                                    <td><span class="badge bg-primary px-3 py-2" style="color: #ffffff;"><?= $ke['temuan']; ?></span></td>
                                                     <td><?= $ke['result']; ?></td>
                                                     <td><?= $ke['judgement']; ?></td>
+                                                                     
+                                                    <td style="width: 350px;" id='ex1'><img class="img-fluid w-100" style="border-radius: 15px;" src="<?php base_url(); ?>/mesin/<?= $ke['file_gambar']; ?> " alt=""></td>
                                                 </tr>
-                                                <?php } ?>                                  
+                                                <?php } ?>
                                             </tbody>
                                         </table>
                                         <a href="<?php base_url(); ?>/laporan/index" class="btn btn-secondary px-3">Kembali</a>
@@ -89,7 +109,11 @@
     $('#changeGroupModal').modal('show');
 });
 
+
     });
+    $(document).ready(function(){
+   $('#ex1').zoom();
+});
 </script>
  
 <?= $this->endSection() ?>  

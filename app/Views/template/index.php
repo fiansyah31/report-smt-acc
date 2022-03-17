@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+    <?php date_default_timezone_set("Asia/Jakarta"); ?>
  
 <head>
  
@@ -84,6 +85,11 @@
                     <i class="fas fa-fw fa-bullhorn"></i>
                     <span>Email</span></a>
             </li>
+          <!--  <li class="nav-item">
+                <a class="nav-link" href="<?= base_url() ?>/data/index">
+                    <i class="fas fa-fw fa-bullhorn"></i>
+                    <span>Data Mesin</span></a>
+            </li>-->
                 <?php endif; ?>
             <li class="nav-item">
                 <a class="nav-link" href="<?= base_url() ?>/users/profile">

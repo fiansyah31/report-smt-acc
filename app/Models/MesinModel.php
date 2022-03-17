@@ -10,7 +10,7 @@ class MesinModel extends Model
     protected $table                = 'tbl_mesin';
 
     protected $allowedFields = [
-    'nama_mesin', 'laporan_id', 'result', 'judgement'];
+    'nama_mesin', 'laporan_id', 'result', 'judgement', 'file_gambar', 'temuan'];
 
 
     public function getMesin($id_laporan = false)

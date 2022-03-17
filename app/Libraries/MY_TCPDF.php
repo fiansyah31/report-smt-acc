@@ -28,10 +28,10 @@ class MY_TCPDF extends TCPDF {
        // $this->Cell(0, 2, 'https://sobatcoding.com', 0, 1, '', 0, '', 0);
         
         // QRCODE,H : QR-CODE Best error correction
-        $this->write2DBarcode('https://sobatcdoing.com', 'QRCODE,H', 0, 3, 20, 20, ['position' => 'R'], 'N');
+       // $this->write2DBarcode('http://report-smt-acc.site/', 'QRCODE,H', 0, 3, 20, 20, ['position' => 'R'], 'N');
 
-        $style = array('width' => 0.25, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));
-        $this->Line(15, 25, 195, 25, $style);
+       // $style = array('width' => 0.25, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));
+      //  $this->Line(15, 25, 195, 25, $style);
 
     }
 
